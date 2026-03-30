@@ -27,6 +27,12 @@ jobs:
       - name: Install vsce
         run: npm install -g @vscode/vsce
 
+      - name: Set version from tag
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#v}"
+          npm version --no-git-tag-version "$VERSION"
+
       - name: Build VSIX
         run: vsce package --no-dependencies
 
