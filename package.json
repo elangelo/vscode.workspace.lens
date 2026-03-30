@@ -3,7 +3,11 @@
     "displayName": "Workspace Lens",
     "description": "Visualize multi-root workspaces with git branch and status indicators",
     "version": "0.1.0",
-    "publisher": "ontoforce",
+    "publisher": "elangelo",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/elangelo/vscode.workspace.lens"
+    },
     "engines": {
         "vscode": "^1.85.0"
     },
