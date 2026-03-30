@@ -111,6 +111,12 @@
                 "title": "Add to Copilot Chat",
                 "icon": "$(sparkle)",
                 "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.deleteFile",
+                "title": "Delete",
+                "icon": "$(trash)",
+                "category": "Workspace Lens"
             }
         ],
         "menus": {
@@ -206,6 +212,11 @@
                     "command": "workspaceLens.addToChat",
                     "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
                     "group": "5_chat@1"
+                },
+                {
+                    "command": "workspaceLens.deleteFile",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "2_fileops@3"
                 }
             ]
         },

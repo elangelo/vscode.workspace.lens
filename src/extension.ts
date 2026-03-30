@@ -154,6 +154,27 @@ export function activate(context: vscode.ExtensionContext): void {
         }
     );
 
+    const deleteFileCommand = vscode.commands.registerCommand(
+        'workspaceLens.deleteFile',
+        async (node: { uri?: vscode.Uri } | undefined) => {
+            const uri = node?.uri;
+            if (!uri) {
+                return;
+            }
+            const name = uri.path.split('/').pop() ?? uri.fsPath;
+            const answer = await vscode.window.showWarningMessage(
+                `Are you sure you want to delete '${name}'? This cannot be undone.`,
+                { modal: true },
+                'Delete'
+            );
+            if (answer !== 'Delete') {
+                return;
+            }
+            await vscode.workspace.fs.delete(uri, { recursive: true, useTrash: true });
+            provider.refresh();
+        }
+    );
+
     context.subscriptions.push(
         treeView,
         provider,
@@ -172,7 +193,8 @@ export function activate(context: vscode.ExtensionContext): void {
         cutCommand,
         copyFileCommand,
         openTimelineCommand,
-        addToChatCommand
+        addToChatCommand,
+        deleteFileCommand
     );
 }
 
