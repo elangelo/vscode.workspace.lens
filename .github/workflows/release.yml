@@ -31,6 +31,10 @@ jobs:
         run: |
           TAG="${{ github.ref_name }}"
           VERSION="${TAG#v}"
+          # Pad to full semver (x.y -> x.y.0)
+          IFS='.' read -ra PARTS <<< "$VERSION"
+          while [[ ${#PARTS[@]} -lt 3 ]]; do PARTS+=("0"); done
+          VERSION="${PARTS[0]}.${PARTS[1]}.${PARTS[2]}"
           npm version --no-git-tag-version "$VERSION"
 
       - name: Build VSIX
