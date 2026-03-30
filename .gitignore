@@ -4,7 +4,7 @@ out/
 # Dependencies
 node_modules/
 
-# Packaged extension
+# Packaged extension (built by CI, not committed)
 *.vsix
 
 # Test output
