@@ -4,6 +4,7 @@
     "description": "Visualize multi-root workspaces with git branch and status indicators",
     "version": "0.1.0",
     "publisher": "elangelo",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/elangelo/vscode.workspace.lens"
