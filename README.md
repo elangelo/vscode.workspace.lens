@@ -15,7 +15,7 @@ A custom panel lists all workspace root folders at the top level. Expand any roo
 Each root folder row shows its current branch and status inline:
 
 ```
-disqover-frontend  [dev * ↑2 ↓1]
+vscode.workspace.lens [main * ↑2 ↓1]
 ```
 
 | Indicator | Meaning |
