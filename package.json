@@ -1,0 +1,250 @@
+{
+    "name": "workspace-lens",
+    "displayName": "Workspace Lens",
+    "description": "Visualize multi-root workspaces with git branch and status indicators",
+    "version": "0.1.0",
+    "publisher": "ontoforce",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "extensionDependencies": [
+        "vscode.git"
+    ],
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "workspace-lens",
+                    "title": "Workspace Lens",
+                    "icon": "resources/icon.svg"
+                }
+            ]
+        },
+        "views": {
+            "workspace-lens": [
+                {
+                    "id": "workspaceLens.foldersView",
+                    "name": "Workspace Folders",
+                    "contextualTitle": "Workspace Lens"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "workspaceLens.refresh",
+                "title": "Refresh",
+                "icon": "$(refresh)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.openTerminal",
+                "title": "Open Terminal Here",
+                "icon": "$(terminal)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.switchWorkspace",
+                "title": "Switch to This Workspace",
+                "icon": "$(arrow-swap)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.openToSide",
+                "title": "Open to the Side",
+                "icon": "$(split-horizontal)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.copyPath",
+                "title": "Copy Path",
+                "icon": "$(clippy)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.revealInOS",
+                "title": "Reveal in File Manager",
+                "icon": "$(folder-opened)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.openTerminalAtPath",
+                "title": "Open Terminal Here",
+                "icon": "$(terminal)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.copyRelativePath",
+                "title": "Copy Relative Path",
+                "icon": "$(clippy)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.cut",
+                "title": "Cut",
+                "icon": "$(scissors)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.copyFile",
+                "title": "Copy",
+                "icon": "$(files)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.openTimeline",
+                "title": "Open Timeline",
+                "icon": "$(history)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.addToChat",
+                "title": "Add to Copilot Chat",
+                "icon": "$(sparkle)",
+                "category": "Workspace Lens"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "workspaceLens.refresh",
+                    "when": "view == workspaceLens.foldersView",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "workspaceLens.openTerminal",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder/",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "workspaceLens.openTerminal",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder/",
+                    "group": "inline"
+                },
+                {
+                    "command": "workspaceLens.switchWorkspace",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFile/",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "workspaceLens.switchWorkspace",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFile/",
+                    "group": "inline"
+                },
+                {
+                    "command": "workspaceLens.openToSide",
+                    "when": "view == workspaceLens.foldersView && viewItem == fileSystemFile",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "workspaceLens.copyPath",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "workspaceLens.copyPath",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder/",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "workspaceLens.revealInOS",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "workspaceLens.revealInOS",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder/",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "workspaceLens.openTerminalAtPath",
+                    "when": "view == workspaceLens.foldersView && viewItem == fileSystemDirectory",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "workspaceLens.openTerminalAtPath",
+                    "when": "view == workspaceLens.foldersView && viewItem == fileSystemDirectory",
+                    "group": "inline"
+                },
+                {
+                    "command": "workspaceLens.cut",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "2_fileops@1"
+                },
+                {
+                    "command": "workspaceLens.copyFile",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "2_fileops@2"
+                },
+                {
+                    "command": "workspaceLens.copyPath",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem|^workspaceFolder/",
+                    "group": "3_pathops@1"
+                },
+                {
+                    "command": "workspaceLens.copyRelativePath",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem|^workspaceFolder/",
+                    "group": "3_pathops@2"
+                },
+                {
+                    "command": "workspaceLens.openTimeline",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFile|^fileSystemFile/",
+                    "group": "4_timeline@1"
+                },
+                {
+                    "command": "workspaceLens.addToChat",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
+                    "group": "5_chat@1"
+                }
+            ]
+        },
+        "colors": [
+            {
+                "id": "workspaceLens.activeWorkspaceFileForeground",
+                "description": "Icon and label color for the currently loaded .code-workspace file.",
+                "defaults": {
+                    "dark": "#89D185",
+                    "light": "#388A34",
+                    "highContrast": "#89D185",
+                    "highContrastLight": "#388A34"
+                }
+            },
+            {
+                "id": "workspaceLens.rootFolderForeground",
+                "description": "Label color for root workspace folders in the Workspace Lens view.",
+                "defaults": {
+                    "dark": "#4EC9B0",
+                    "light": "#267F99",
+                    "highContrast": "#4EC9B0",
+                    "highContrastLight": "#267F99"
+                }
+            },
+            {
+                "id": "workspaceLens.workspaceFileFolderForeground",
+                "description": "Label color for the folder that contains the .code-workspace file.",
+                "defaults": {
+                    "dark": "#FFD602",
+                    "light": "#A07D00",
+                    "highContrast": "#FFD602",
+                    "highContrastLight": "#A07D00"
+                }
+            }
+        ]
+    },
+    "scripts": {
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "vscode:prepublish": "npm run compile"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.85.0",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.3.0"
+    }
+}
