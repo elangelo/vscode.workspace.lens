@@ -175,6 +175,49 @@ export function activate(context: vscode.ExtensionContext): void {
         }
     );
 
+    const newFileCommand = vscode.commands.registerCommand(
+        'workspaceLens.newFile',
+        async (node: { uri?: vscode.Uri; folder?: vscode.WorkspaceFolder } | undefined) => {
+            const dirUri = node?.uri ?? node?.folder?.uri;
+            if (!dirUri) {
+                return;
+            }
+            const name = await vscode.window.showInputBox({
+                prompt: 'Enter the new file name',
+                placeHolder: 'filename.ext',
+                validateInput: value => (value.trim() ? undefined : 'File name cannot be empty'),
+            });
+            if (!name) {
+                return;
+            }
+            const target = vscode.Uri.joinPath(dirUri, name.trim());
+            await vscode.workspace.fs.writeFile(target, new Uint8Array());
+            provider.refresh();
+            await vscode.commands.executeCommand('vscode.open', target);
+        }
+    );
+
+    const newFolderCommand = vscode.commands.registerCommand(
+        'workspaceLens.newFolder',
+        async (node: { uri?: vscode.Uri; folder?: vscode.WorkspaceFolder } | undefined) => {
+            const dirUri = node?.uri ?? node?.folder?.uri;
+            if (!dirUri) {
+                return;
+            }
+            const name = await vscode.window.showInputBox({
+                prompt: 'Enter the new folder name',
+                placeHolder: 'folder-name',
+                validateInput: value => (value.trim() ? undefined : 'Folder name cannot be empty'),
+            });
+            if (!name) {
+                return;
+            }
+            const target = vscode.Uri.joinPath(dirUri, name.trim());
+            await vscode.workspace.fs.createDirectory(target);
+            provider.refresh();
+        }
+    );
+
     context.subscriptions.push(
         treeView,
         provider,
@@ -194,7 +237,9 @@ export function activate(context: vscode.ExtensionContext): void {
         copyFileCommand,
         openTimelineCommand,
         addToChatCommand,
-        deleteFileCommand
+        deleteFileCommand,
+        newFileCommand,
+        newFolderCommand
     );
 }
 

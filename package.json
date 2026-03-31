@@ -117,6 +117,18 @@
                 "title": "Delete",
                 "icon": "$(trash)",
                 "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.newFile",
+                "title": "New File...",
+                "icon": "$(new-file)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.newFolder",
+                "title": "New Folder...",
+                "icon": "$(new-folder)",
+                "category": "Workspace Lens"
             }
         ],
         "menus": {
@@ -217,6 +229,16 @@
                     "command": "workspaceLens.deleteFile",
                     "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
                     "group": "2_fileops@3"
+                },
+                {
+                    "command": "workspaceLens.newFile",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder|^fileSystemDirectory/",
+                    "group": "1_new@1"
+                },
+                {
+                    "command": "workspaceLens.newFolder",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^workspaceFolder|^fileSystemDirectory/",
+                    "group": "1_new@2"
                 }
             ]
         },
