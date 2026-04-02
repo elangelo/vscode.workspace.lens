@@ -49,6 +49,16 @@ ai-workspace  [main]  ws:ps-workspace
 
 `.code-workspace` files in the tree are rendered with a distinct `$(multiple-windows)` icon. The currently loaded workspace file is highlighted in green and marked `● active`.
 
+### Bookmarks panel
+
+At the top of the tree, a dedicated **Bookmarks** section gives quick access to frequently used files.
+
+- Add bookmarks from file context menus with **Add Bookmark**
+- Remove entries directly from the bookmark item with **Remove Bookmark**
+- Use the view title button **Bookmark Active File** to pin the currently open editor file
+
+Bookmarks are persisted in workspace state and restored automatically.
+
 ### Terminal launcher with reuse
 
 Right-click any root folder or sub-directory and choose **Open Terminal Here**. The terminal opens at that folder's path. If a terminal for that folder is already open, it is focused instead of creating a duplicate.
@@ -63,8 +73,9 @@ Right-click any `.code-workspace` file in the tree and choose **Switch to This W
 |---|---|
 | Root folder | Open Terminal, Copy Path, Copy Relative Path, Reveal in File Manager |
 | Sub-directory | Open Terminal Here, Cut, Copy, Copy Path, Copy Relative Path, Reveal in File Manager, Add to Copilot Chat |
-| File | Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat |
-| `.code-workspace` file | Switch to This Workspace, Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat |
+| File | Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
+| `.code-workspace` file | Switch to This Workspace, Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
+| Bookmark item | Open File, Remove Bookmark |
 
 ## Requirements
 

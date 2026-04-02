@@ -5,10 +5,77 @@ import { WorkspaceFolderProvider } from './WorkspaceFolderProvider';
 import { WorkspaceDecorationProvider } from './WorkspaceDecorationProvider';
 import type { WorkspaceFolderItem } from './types';
 
+async function addUriToCopilotChat(uri: vscode.Uri): Promise<void> {
+    const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
+    if (!copilotChat) {
+        throw new Error('Copilot Chat extension is not installed');
+    }
+
+    if (!copilotChat.isActive) {
+        await copilotChat.activate();
+    }
+
+    // Prefer chat-open APIs because command IDs for "include" changed across versions.
+    const primaryAttempts: Array<() => Thenable<void>> = [
+        () =>
+            vscode.commands.executeCommand('workbench.action.chat.open', {
+                attachFiles: [uri],
+            }),
+        () =>
+            vscode.commands.executeCommand('workbench.action.chat.open', {
+                mode: 'ask',
+                attachFiles: [uri],
+            }),
+        () =>
+            vscode.commands.executeCommand('workbench.action.chat.open', {
+                mode: 'agent',
+                attachFiles: [uri],
+            }),
+    ];
+
+    for (const attempt of primaryAttempts) {
+        try {
+            await attempt();
+            return;
+        } catch {
+            // try next signature
+        }
+    }
+
+    const availableCommands = await vscode.commands.getCommands(true);
+    const knownIncludeCommands = [
+        'github.copilot.chat.include',
+        'github.copilot.chat.attachFile',
+    ];
+
+    const includeCommand = knownIncludeCommands.find(cmd => availableCommands.includes(cmd));
+    if (!includeCommand) {
+        throw new Error('No compatible Copilot Chat include command found');
+    }
+
+    const includeAttempts: Array<() => Thenable<void>> = [
+        () => vscode.commands.executeCommand(includeCommand, uri),
+        () => vscode.commands.executeCommand(includeCommand, [uri]),
+        () => vscode.commands.executeCommand(includeCommand, { uri }),
+        () => vscode.commands.executeCommand(includeCommand, { uris: [uri] }),
+    ];
+
+    for (const attempt of includeAttempts) {
+        try {
+            await attempt();
+            return;
+        } catch {
+            // try next payload shape
+        }
+    }
+
+    throw new Error('Copilot Chat command rejected all known argument shapes');
+}
+
 export function activate(context: vscode.ExtensionContext): void {
     const gitService = new GitService();
     const terminalService = new TerminalService();
-    const provider = new WorkspaceFolderProvider(gitService);
+    const provider = new WorkspaceFolderProvider(gitService, context.workspaceState);
     const decorationProvider = new WorkspaceDecorationProvider();
 
     // Wire git refresh back into the tree provider (full refresh — small tree, no overhead)
@@ -145,11 +212,57 @@ export function activate(context: vscode.ExtensionContext): void {
                 return;
             }
             try {
-                await vscode.commands.executeCommand('github.copilot.chat.include', uri);
+                await addUriToCopilotChat(uri);
             } catch {
                 vscode.window.showErrorMessage(
-                    'Could not add to Copilot Chat. Make sure GitHub Copilot Chat is installed.'
+                    'Could not add to Copilot Chat. Ensure GitHub Copilot Chat is installed and enabled.'
                 );
+            }
+        }
+    );
+
+    const bookmarkAddCommand = vscode.commands.registerCommand(
+        'workspaceLens.bookmarkAdd',
+        async (node: { uri?: vscode.Uri } | undefined) => {
+            const uri = node?.uri;
+            if (!uri) {
+                return;
+            }
+
+            const added = await provider.addBookmark(uri);
+            if (!added) {
+                vscode.window.showInformationMessage('File is already bookmarked.');
+            }
+        }
+    );
+
+    const bookmarkRemoveCommand = vscode.commands.registerCommand(
+        'workspaceLens.bookmarkRemove',
+        async (node: { uri?: vscode.Uri } | undefined) => {
+            const uri = node?.uri;
+            if (!uri) {
+                return;
+            }
+
+            const removed = await provider.removeBookmark(uri);
+            if (!removed) {
+                vscode.window.showInformationMessage('File is not bookmarked.');
+            }
+        }
+    );
+
+    const bookmarkAddActiveEditorCommand = vscode.commands.registerCommand(
+        'workspaceLens.bookmarkAddActiveEditor',
+        async () => {
+            const uri = vscode.window.activeTextEditor?.document.uri;
+            if (!uri || uri.scheme !== 'file') {
+                vscode.window.showInformationMessage('Open a file editor to add a bookmark.');
+                return;
+            }
+
+            const added = await provider.addBookmark(uri);
+            if (!added) {
+                vscode.window.showInformationMessage('File is already bookmarked.');
             }
         }
     );
@@ -237,6 +350,9 @@ export function activate(context: vscode.ExtensionContext): void {
         copyFileCommand,
         openTimelineCommand,
         addToChatCommand,
+        bookmarkAddCommand,
+        bookmarkRemoveCommand,
+        bookmarkAddActiveEditorCommand,
         deleteFileCommand,
         newFileCommand,
         newFolderCommand

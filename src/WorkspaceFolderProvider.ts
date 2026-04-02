@@ -1,18 +1,30 @@
 import * as vscode from 'vscode';
-import type { TreeNode, WorkspaceFolderItem, FileSystemItem } from './types';
+import type {
+    TreeNode,
+    WorkspaceFolderItem,
+    FileSystemItem,
+    BookmarksGroupItem,
+    BookmarkItem,
+} from './types';
 import type { GitService } from './GitService';
 
 export class WorkspaceFolderProvider
     implements vscode.TreeDataProvider<TreeNode>, vscode.Disposable
 {
+    private static readonly bookmarksStateKey = 'workspaceLens.bookmarks';
+
     private readonly _onDidChangeTreeData = new vscode.EventEmitter<
         TreeNode | undefined | void
     >();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     private readonly disposables: vscode.Disposable[] = [];
+    private readonly bookmarksGroup: BookmarksGroupItem = { kind: 'bookmarksGroup' };
 
-    constructor(private readonly git: GitService) {
+    constructor(
+        private readonly git: GitService,
+        private readonly workspaceState: vscode.Memento
+    ) {
         this.disposables.push(
             vscode.workspace.onDidChangeWorkspaceFolders(() => {
                 this._onDidChangeTreeData.fire();
@@ -28,12 +40,21 @@ export class WorkspaceFolderProvider
         if (node.kind === 'workspaceFolder') {
             return this.buildWorkspaceFolderItem(node);
         }
+        if (node.kind === 'bookmarksGroup') {
+            return this.buildBookmarksGroupItem();
+        }
+        if (node.kind === 'bookmark') {
+            return this.buildBookmarkItem(node);
+        }
         return this.buildFileSystemItem(node);
     }
 
     async getChildren(node?: TreeNode): Promise<TreeNode[]> {
         if (!node) {
             return this.getRootNodes();
+        }
+        if (node.kind === 'bookmarksGroup') {
+            return this.getBookmarkNodes();
         }
         if (node.kind === 'workspaceFolder') {
             return this.readDirectory(node.folder.uri, node);
@@ -44,9 +65,100 @@ export class WorkspaceFolderProvider
         return [];
     }
 
-    private getRootNodes(): WorkspaceFolderItem[] {
+    private getRootNodes(): TreeNode[] {
         const folders = vscode.workspace.workspaceFolders ?? [];
-        return folders.map(folder => ({ kind: 'workspaceFolder', folder }));
+        return [
+            this.bookmarksGroup,
+            ...folders.map(folder => ({ kind: 'workspaceFolder' as const, folder })),
+        ];
+    }
+
+    private bookmarkUris(): vscode.Uri[] {
+        const values = this.workspaceState.get<string[]>(
+            WorkspaceFolderProvider.bookmarksStateKey,
+            []
+        );
+        return values.map(value => vscode.Uri.parse(value));
+    }
+
+    private async getBookmarkNodes(): Promise<BookmarkItem[]> {
+        const items = await Promise.all(
+            this.bookmarkUris().map(async uri => {
+                try {
+                    const stat = await vscode.workspace.fs.stat(uri);
+                    if (stat.type !== vscode.FileType.File) {
+                        return undefined;
+                    }
+                    return { kind: 'bookmark' as const, uri };
+                } catch {
+                    return undefined;
+                }
+            })
+        );
+
+        return items
+            .filter((item): item is BookmarkItem => item !== undefined)
+            .sort((a, b) => a.uri.path.localeCompare(b.uri.path));
+    }
+
+    async addBookmark(uri: vscode.Uri): Promise<boolean> {
+        const current = this.bookmarkUris().map(item => item.toString());
+        const key = uri.toString();
+        if (current.includes(key)) {
+            return false;
+        }
+
+        await this.workspaceState.update(WorkspaceFolderProvider.bookmarksStateKey, [
+            ...current,
+            key,
+        ]);
+        this.refresh();
+        return true;
+    }
+
+    async removeBookmark(uri: vscode.Uri): Promise<boolean> {
+        const current = this.bookmarkUris().map(item => item.toString());
+        const next = current.filter(item => item !== uri.toString());
+        if (next.length === current.length) {
+            return false;
+        }
+
+        await this.workspaceState.update(WorkspaceFolderProvider.bookmarksStateKey, next);
+        this.refresh();
+        return true;
+    }
+
+    isBookmarked(uri: vscode.Uri): boolean {
+        const key = uri.toString();
+        return this.bookmarkUris().some(item => item.toString() === key);
+    }
+
+    private buildBookmarksGroupItem(): vscode.TreeItem {
+        const item = new vscode.TreeItem(
+            'Bookmarks',
+            vscode.TreeItemCollapsibleState.Expanded
+        );
+        item.contextValue = 'bookmarksGroup';
+        item.iconPath = new vscode.ThemeIcon('bookmark');
+        item.description = `${this.bookmarkUris().length}`;
+        item.tooltip = 'Quick access to your bookmarked files';
+        return item;
+    }
+
+    private buildBookmarkItem(node: BookmarkItem): vscode.TreeItem {
+        const item = new vscode.TreeItem(
+            node.uri,
+            vscode.TreeItemCollapsibleState.None
+        );
+        item.contextValue = 'bookmarkItem';
+        item.command = {
+            command: 'vscode.open',
+            title: 'Open File',
+            arguments: [node.uri],
+        };
+        item.iconPath = new vscode.ThemeIcon('bookmark');
+        item.description = vscode.workspace.asRelativePath(node.uri, true);
+        return item;
     }
 
     private async readDirectory(

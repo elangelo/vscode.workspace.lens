@@ -12,4 +12,17 @@ export interface FileSystemItem {
     parent: WorkspaceFolderItem | FileSystemItem;
 }
 
-export type TreeNode = WorkspaceFolderItem | FileSystemItem;
+export interface BookmarksGroupItem {
+    kind: 'bookmarksGroup';
+}
+
+export interface BookmarkItem {
+    kind: 'bookmark';
+    uri: vscode.Uri;
+}
+
+export type TreeNode =
+    | WorkspaceFolderItem
+    | FileSystemItem
+    | BookmarksGroupItem
+    | BookmarkItem;

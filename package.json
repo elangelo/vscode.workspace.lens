@@ -129,6 +129,24 @@
                 "title": "New Folder...",
                 "icon": "$(new-folder)",
                 "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.bookmarkAdd",
+                "title": "Add Bookmark",
+                "icon": "$(bookmark)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.bookmarkRemove",
+                "title": "Remove Bookmark",
+                "icon": "$(bookmark-slash)",
+                "category": "Workspace Lens"
+            },
+            {
+                "command": "workspaceLens.bookmarkAddActiveEditor",
+                "title": "Bookmark Active File",
+                "icon": "$(bookmark)",
+                "category": "Workspace Lens"
             }
         ],
         "menus": {
@@ -137,6 +155,11 @@
                     "command": "workspaceLens.refresh",
                     "when": "view == workspaceLens.foldersView",
                     "group": "navigation"
+                },
+                {
+                    "command": "workspaceLens.bookmarkAddActiveEditor",
+                    "when": "view == workspaceLens.foldersView",
+                    "group": "navigation@1"
                 }
             ],
             "view/item/context": [
@@ -224,6 +247,26 @@
                     "command": "workspaceLens.addToChat",
                     "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystem/",
                     "group": "5_chat@1"
+                },
+                {
+                    "command": "workspaceLens.bookmarkAdd",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystemFile|^workspaceFile/",
+                    "group": "5_chat@2"
+                },
+                {
+                    "command": "workspaceLens.bookmarkAdd",
+                    "when": "view == workspaceLens.foldersView && viewItem =~ /^fileSystemFile|^workspaceFile/",
+                    "group": "inline"
+                },
+                {
+                    "command": "workspaceLens.bookmarkRemove",
+                    "when": "view == workspaceLens.foldersView && viewItem == bookmarkItem",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "workspaceLens.bookmarkRemove",
+                    "when": "view == workspaceLens.foldersView && viewItem == bookmarkItem",
+                    "group": "inline"
                 },
                 {
                     "command": "workspaceLens.deleteFile",
