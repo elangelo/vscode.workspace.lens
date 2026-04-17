@@ -285,6 +285,28 @@
                 }
             ]
         },
+        "keybindings": [
+            {
+                "command": "workspaceLens.deleteFile",
+                "key": "delete",
+                "when": "focusedView == workspaceLens.foldersView && listFocus && !inputFocus && viewItem =~ /^fileSystem/"
+            },
+            {
+                "command": "workspaceLens.deleteFile",
+                "key": "shift+delete",
+                "when": "focusedView == workspaceLens.foldersView && listFocus && !inputFocus && viewItem =~ /^fileSystem/"
+            },
+            {
+                "command": "workspaceLens.bookmarkRemove",
+                "key": "delete",
+                "when": "focusedView == workspaceLens.foldersView && listFocus && !inputFocus && viewItem == bookmarkItem"
+            },
+            {
+                "command": "workspaceLens.bookmarkRemove",
+                "key": "shift+delete",
+                "when": "focusedView == workspaceLens.foldersView && listFocus && !inputFocus && viewItem == bookmarkItem"
+            }
+        ],
         "colors": [
             {
                 "id": "workspaceLens.activeWorkspaceFileForeground",
