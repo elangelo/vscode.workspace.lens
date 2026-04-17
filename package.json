@@ -2,8 +2,9 @@
     "name": "workspace-lens",
     "displayName": "Workspace Lens",
     "description": "Visualize multi-root workspaces with git branch and status indicators",
-    "version": "0.1.0",
+    "version": "0.6.0",
     "publisher": "elangelo",
+    "icon": "resources/icon.png",
     "license": "MIT",
     "repository": {
         "type": "git",
