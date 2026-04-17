@@ -2,10 +2,6 @@
 
 A Visual Studio Code extension that makes multi-root workspaces actually usable.
 
-## For AI Agents
-
-If you are making changes with an AI coding agent, read `AGENTS.md` first. It explains repository purpose, architecture, command and node model, and a safe validation checklist.
-
 The built-in Explorer gives no visual differentiation between workspace roots and their children, shows no git information per folder, and provides no quick way to open a terminal scoped to a specific root. Workspace Lens fixes all of that.
 
 ## Features
@@ -57,11 +53,20 @@ ai-workspace  [main]  ws:ps-workspace
 
 At the top of the tree, a dedicated **Bookmarks** section gives quick access to frequently used files.
 
-- Add bookmarks from file context menus with **Add Bookmark**
+- Add bookmarks from file context menus with **Add Bookmark** (also available as an inline icon on hover)
 - Remove entries directly from the bookmark item with **Remove Bookmark**
-- Use the view title button **Bookmark Active File** to pin the currently open editor file
+- Use the view title button **Bookmark Active File** to pin the currently open editor
 
-Bookmarks are persisted in workspace state and restored automatically.
+Bookmarks are persisted in workspace state and restored automatically across sessions.
+
+### File management
+
+Right-click any root folder or directory to create new files or folders directly inside it:
+
+- **New File...** — prompts for a name, creates the file, and opens it in the editor
+- **New Folder...** — prompts for a name and creates the directory
+
+Right-click any file or directory to **Delete** it (moves to trash with a confirmation prompt).
 
 ### Terminal launcher with reuse
 
@@ -75,10 +80,10 @@ Right-click any `.code-workspace` file in the tree and choose **Switch to This W
 
 | Item type | Available actions |
 |---|---|
-| Root folder | Open Terminal, Copy Path, Copy Relative Path, Reveal in File Manager |
-| Sub-directory | Open Terminal Here, Cut, Copy, Copy Path, Copy Relative Path, Reveal in File Manager, Add to Copilot Chat |
-| File | Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
-| `.code-workspace` file | Switch to This Workspace, Open to the Side, Cut, Copy, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
+| Root folder | New File, New Folder, Open Terminal, Copy Path, Copy Relative Path, Reveal in File Manager |
+| Sub-directory | New File, New Folder, Open Terminal Here, Cut, Copy, Delete, Copy Path, Copy Relative Path, Reveal in File Manager, Add to Copilot Chat |
+| File | Open to the Side, Cut, Copy, Delete, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
+| `.code-workspace` file | Switch to This Workspace, Open to the Side, Cut, Copy, Delete, Copy Path, Copy Relative Path, Open Timeline, Reveal in File Manager, Add to Copilot Chat, Add Bookmark |
 | Bookmark item | Open File, Remove Bookmark |
 
 ## Requirements
@@ -112,8 +117,3 @@ Press `F5` to launch an Extension Development Host with the extension loaded. Op
 ```bash
 npm run watch   # incremental compilation
 ```
-
-## Contributing
-
-- Start with [AGENTS.md](AGENTS.md) for repository architecture, command/node conventions, and the validation checklist.
-- Use [.github/pull_request_template.md](.github/pull_request_template.md) when opening pull requests.
