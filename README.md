@@ -2,6 +2,10 @@
 
 A Visual Studio Code extension that makes multi-root workspaces actually usable.
 
+## For AI Agents
+
+If you are making changes with an AI coding agent, read `AGENTS.md` first. It explains repository purpose, architecture, command and node model, and a safe validation checklist.
+
 The built-in Explorer gives no visual differentiation between workspace roots and their children, shows no git information per folder, and provides no quick way to open a terminal scoped to a specific root. Workspace Lens fixes all of that.
 
 ## Features
@@ -108,3 +112,8 @@ Press `F5` to launch an Extension Development Host with the extension loaded. Op
 ```bash
 npm run watch   # incremental compilation
 ```
+
+## Contributing
+
+- Start with [AGENTS.md](AGENTS.md) for repository architecture, command/node conventions, and the validation checklist.
+- Use [.github/pull_request_template.md](.github/pull_request_template.md) when opening pull requests.
