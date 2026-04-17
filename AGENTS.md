@@ -36,20 +36,32 @@ Core user value:
   - Reuses one terminal per URI.
 - `src/WorkspaceDecorationProvider.ts`
   - Applies color decorations to workspace root folders and workspace host folder.
+  - Also decorates the active `.code-workspace` file URI (`workspaceFileActive`) with `workspaceLens.activeWorkspaceFileForeground`.
+  - If you add a new visual state that needs row-level color, add a new `ThemeColor` ID here, declare it in `package.json` under `contributes.colors`, and apply it via `provideFileDecoration`.
 - `src/types.ts`
   - Tree node discriminated unions used by provider + command handlers.
 - `src/git.d.ts`
   - Minimal local typing for git extension API surface used by this project.
+  - **Manually maintained** — do not try to `npm install` these types. They are a hand-trimmed subset copied from `microsoft/vscode` → `extensions/git/src/api/git.d.ts`. Only extend this file if a new git API surface is needed.
 
 ## Tree and command behavior
 
 The custom view ID is `workspaceLens.foldersView` under the activity container `workspace-lens`.
 
-Node kinds:
-- `bookmarksGroup`
-- `bookmark`
-- `workspaceFolder`
-- `fileSystem` (file or directory)
+Node kinds and their **`contextValue`** strings (used in `package.json` `when` clauses):
+
+| Node kind | `contextValue` | Description |
+|---|---|---|
+| `bookmarksGroup` | `bookmarksGroup` | The static Bookmarks header |
+| `bookmark` | `bookmarkItem` | A single bookmarked file |
+| `workspaceFolder` | `workspaceFolder` | A regular root folder |
+| `workspaceFolder` | `workspaceFolderHost` | The root folder that contains the `.code-workspace` file |
+| `fileSystem` (dir) | `fileSystemDirectory` | A sub-directory inside a root |
+| `fileSystem` (file) | `fileSystemFile` | A regular file |
+| `fileSystem` (file) | `workspaceFile` | A `.code-workspace` file (not currently loaded) |
+| `fileSystem` (file) | `workspaceFileActive` | The currently loaded `.code-workspace` file |
+
+When clauses in `package.json` use regex prefix matching (`viewItem =~ /^workspaceFolder/`) to match both `workspaceFolder` and `workspaceFolderHost` in one rule. Use the same pattern when adding new commands that apply to both.
 
 Important command IDs:
 - `workspaceLens.refresh`
@@ -67,11 +79,26 @@ Important command IDs:
 - `workspaceLens.bookmarkAdd`
 - `workspaceLens.bookmarkRemove`
 - `workspaceLens.bookmarkAddActiveEditor`
+- `workspaceLens.deleteFile`
+- `workspaceLens.newFile`
+- `workspaceLens.newFolder`
 
 When adding a new command:
 1. Add it in `package.json` contributions (`commands` and menu placements if needed).
 2. Register it in `activate`.
 3. Set/extend node `contextValue` where required.
+
+## Host folder label format
+
+The workspace host folder row shows a compound description built in `WorkspaceFolderProvider.buildWorkspaceFolderItem`:
+
+```
+[branch * ↑N ↓M]  ws:workspace-name
+```
+
+- The git part (`[branch...]`) comes from `GitService.formatDescription()`.
+- The `ws:name` suffix is the active `.code-workspace` filename with the extension stripped, produced by `WorkspaceFolderProvider.activeWorkspaceName()`.
+- Only shown on the host folder row (`isHost === true`); other roots show only the git part.
 
 ## Data flow summary
 
